@@ -16,10 +16,32 @@
  */
 quorum_result quorum_council_initialize_preamble
 (
-	quorum_council [const static 1]
+	quorum_council council [const static 1],
+	const quorum_core core [const restrict static 1],
+	#if (QUORUM_ENABLE_BARRIER == 1)
+		const quorum_mechanism_index barriers_count,
+		quorum_barrier barriers [const static barriers_count],
+	#endif
+	#if (QUORUM_ENABLE_MAILBOX == 1)
+		const quorum_mechanism_index mailboxes_count,
+		quorum_mailbox mailboxes [const static mailboxes_count],
+	#endif
+	#if (QUORUM_ENABLE_MUTEX == 1)
+		const quorum_mechanism_index mutexes_count,
+		quorum_mutex mutexes [const static mutexes_count],
+	#endif
+	#if (QUORUM_ENABLE_SEMAPHORE == 1)
+		const quorum_mechanism_index semaphores_count,
+		quorum_semaphore semaphores [const static semaphores_count],
+	#endif
+	#if (QUORUM_ENABLE_SIGNAL == 1)
+		const quorum_mechanism_index signals_count,
+		quorum_signal signals [const static signals_count],
+	#endif
+	const quorum_attributes attributes
 );
 
-quorum_result quorum_council_initialize_epilogue
+void quorum_council_initialize_epilogue
 (
 	quorum_council [const static 1]
 );

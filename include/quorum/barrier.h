@@ -16,14 +16,11 @@
 #include "barrier/type.h"
 #include "council/type.h"
 
-quorum_result quorum_barrier_initialize
+void quorum_barrier_initialize
 (
 	quorum_council council [const static 1],
-	const quorum_core core [const restrict static 1],
 	const quorum_mechanism_index barrier_index,
-	const quorum_core_index initial_count,
-	const bool reset_on_opening,
-	const quorum_attributes attributes
+	const quorum_core_index initial_countdown
 );
 
 quorum_result quorum_barrier_wait_on
@@ -38,7 +35,7 @@ quorum_result quorum_barrier_check_and_handle_pending_update
 (
 	quorum_council council [const static 1],
 	const quorum_core core [const restrict static 1],
-	const quorum_mechanism_index barrier_index,
+	quorum_mechanism_index unlocked_barrier_index [const restrict static 1],
 	const quorum_attributes attributes
 );
 

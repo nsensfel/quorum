@@ -124,21 +124,52 @@
 
 enum quorum_result
 {
-	QUORUM_ERROR,
-	QUORUM_TIMED_OUT,
-	QUORUM_FAILURE,
-	QUORUM_SUCCESS,
-	QUORUM_OBTAINED,
-	QUORUM_DELAYED
+	/* This can never succeed (programming error). */
+	QUORUM_IMPOSSIBLE = -4,
+
+	/* An error occurred */
+	QUORUM_ERROR = -3,
+
+	/* Locking the council timed out. */
+	QUORUM_COUNCIL_LOCK_TIMEOUT = -2,
+
+	/* Something prevented the operation from succeeding. */
+	QUORUM_FAILURE = -1,
+
+	/* The operation succeeded. */
+	QUORUM_SUCCESS = 0,
+
+	/* The operation has started (e.g. joined a waiting list). */
+	QUORUM_PENDING = 0,
+
+	/* The requested permission was granted. */
+	QUORUM_GRANTED = 1,
 };
 
 enum quorum_attribute
 {
 	QUORUM_DEFAULT_BEHAVIOR = 0,
+
+	/*
+	 * Do not join waiting lists. Fail if the permission cannot be granted
+	 * immediately.
+	 */
 	QUORUM_IMMEDIATE = 1,
-	QUORUM_ENABLE_TIMEOUT = 2,
-	QUORUM_IMMEDIATE_COUNCIL = 4,
-	QUORUM_ENABLE_COUNCIL_TIMEOUT = 8
+
+	/*
+	 * Do not attempt multiple council locks. Timeout the council lock
+	 * immediately if it fails.
+	 */
+	QUORUM_IMMEDIATE_COUNCIL = 2,
+
+	/*
+	 * Request a timeout on the council lock. Meaning is up to the machine
+	 * specific implementation.
+	 * This option is intended to provide an option that ensures all Quorum calls
+	 * complete. It is recommended for 'quorum_core.opaque' to hold all
+	 * information regarding how long the timeout should last.
+	 */
+	QUORUM_ENABLE_COUNCIL_TIMEOUT = 4
 };
 
 typedef uint32_t quorum_attributes;
@@ -154,7 +185,7 @@ typedef uint32_t quorum_attributes;
 		fprintf \
 		( \
 			stderr, \
-			("[E][QUORUM][%s][l.%d]" (message)), \
+			("[E][QUORUM][%s][l.%d]" (message) "\n"), \
 			__FILE__, \
 			__LINE__, \
 			__VA_ARGS__ \
@@ -164,9 +195,9 @@ typedef uint32_t quorum_attributes;
 #if (QUORUM_ENABLE_ASSERT == 1)
 	#ifndef QUORUM_ASSERT
 		#define QUORUM_ASSERT(test, message, ...) \
-			if (test) \
+			if !((test)) \
 			{ \
-				QUORUM_ERROR((message), __VA_ARGS__); \
+				QUORUM_ERROR(("[ASSERT]" (message)), __VA_ARGS__); \
 			}
 	#endif
 #else
@@ -175,7 +206,8 @@ typedef uint32_t quorum_attributes;
 
 #if (QUORUM_ENABLE_QUORUM_DEBUG_ASSERT == 1)
 	#ifndef QUORUM_DEBUG_ASSERT
-		#define QUORUM_DEBUG_ASSERT(...) QUORUM_ASSERT(__VA_ARGS__)
+		#define QUORUM_DEBUG_ASSERT(test, message, ...) \
+			QUORUM_ASSERT(test, ("[QUORUM-DEBUG]" (message)), __VA_ARGS__)
 	#endif
 #else
 	#define QUORUM_DEBUG_ASSERT(...)

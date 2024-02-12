@@ -15,10 +15,14 @@
 
 typedef struct
 {
-	/* Number of additional cores needed for the barrier to open. */
+	/*
+	 * Number of additional cores needed for the barrier to open.
+	 */
 	quorum_core_index current_countdown;
 
-	/* Total number of cores required for the barrier to open. */
+	/*
+	 * Number of cores required for the barrier to open after it closes again.
+	 */
 	quorum_core_index initial_countdown;
 
 	/* Is [core_index] waiting for the barrier to open? */

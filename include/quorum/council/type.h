@@ -50,23 +50,23 @@ typedef struct
 	quorum_core_status core_statuses[QUORUM_CORE_COUNT_MAX];
 	#if (QUORUM_ENABLE_BARRIER == 1)
 		quorum_mechanism_index barriers_count;
-		quorum_barrier barriers[];
+		quorum_barrier * barriers;
 	#endif
 	#if (QUORUM_ENABLE_MAILBOX == 1)
 		quorum_mechanism_index mailboxes_count;
-		quorum_mailbox mailboxes[];
+		quorum_mailbox * mailboxes;
 	#endif
 	#if (QUORUM_ENABLE_MUTEX == 1)
 		quorum_mechanism_index mutexes_count;
-		quorum_mutex mutexes[];
+		quorum_mutex * mutexes;
 	#endif
 	#if (QUORUM_ENABLE_SEMAPHORE == 1)
 		quorum_mechanism_index semaphores_count;
-		quorum_semaphore semaphores[];
+		quorum_semaphore * semaphores;
 	#endif
 	#if (QUORUM_ENABLE_SIGNAL == 1)
 		quorum_mechanism_index signals_count;
-		quorum_signal signals[];
+		quorum_signal * signals;
 	#endif
 	/* Has one of the cores initialized the council yet? */
 	bool is_initialized;
