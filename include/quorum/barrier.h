@@ -13,8 +13,8 @@
 
 #include <stdbool.h>
 
-#include "barrier/type.h"
-#include "council/type.h"
+#include "barrier/types.h"
+#include "council/types.h"
 
 void quorum_barrier_initialize
 (

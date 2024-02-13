@@ -13,7 +13,10 @@
 
 #include <stdint.h>
 
-quorum_result quorum_mailbox_initialize
+#include "mailbox/types.h"
+#include "council/types.h"
+
+void quorum_mailbox_initialize
 (
 	quorum_council council [const static 1],
 	const quorum_mechanism_index mailbox_index,
@@ -32,13 +35,13 @@ quorum_result quorum_mailbox_send
 	const quorum_attributes attributes
 );
 
-quorum_result quorum_mailbox_send_to_allocated
+quorum_result quorum_mailbox_send_to_reserved_space
 (
 	quorum_council council [const static 1],
 	const quorum_core core [const restrict static 1],
 	const quorum_mechanism_index mailbox_index,
 	const quorum_message_size message_size,
-	const uint8_t message [const static message_size],
+	const uint8_t message [const restrict static message_size],
 	const quorum_attributes attributes
 );
 
@@ -46,11 +49,22 @@ quorum_result quorum_mailbox_receive
 (
 	quorum_council council [const static 1],
 	const quorum_core core [const restrict static 1],
+	const quorum_mechanism_index mailbox_index,
 	const quorum_message_size buffer_size,
 	uint8_t buffer [const restrict static buffer_size],
 	quorum_message_size output_size [const restrict static 1],
 	const quorum_attributes attributes
 );
+
+quorum_result quorum_mailbox_check_and_handle_pending_update
+(
+	quorum_council council [const static 1],
+	const quorum_core core [const restrict static 1],
+	const quorum_attributes attributes,
+	quorum_mechanism_index result_index [const restrict static 1],
+	bool update_indicates_writing [const restrict static 1]
+);
+
 #endif
 
 #endif

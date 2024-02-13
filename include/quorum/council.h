@@ -9,6 +9,28 @@
 
 #include "pervasive.h"
 
+#if (QUORUM_ENABLE_BARRIER == 1)
+	#include "barrier/types.h"
+#endif
+
+#if (QUORUM_ENABLE_MAILBOX == 1)
+	#include "mailbox/types.h"
+#endif
+
+#if (QUORUM_ENABLE_MUTEX == 1)
+	#include "mutex/types.h"
+#endif
+
+#if (QUORUM_ENABLE_SEMAPHORE == 1)
+	#include "semaphore/types.h"
+#endif
+
+#if (QUORUM_ENABLE_SIGNAL == 1)
+	#include "signal/types.h"
+#endif
+
+#include "council/types.h"
+
 /*
  * First CPU to get the HW mutex initializes.
  * Others don't.
@@ -43,7 +65,28 @@ quorum_result quorum_council_initialize_preamble
 
 void quorum_council_initialize_epilogue
 (
-	quorum_council [const static 1]
+	quorum_council council [const static 1],
+	const quorum_core core [const restrict static 1],
+	const quorum_attributes attributes
+);
+
+quorum_result quorum_council_lock
+(
+	const quorum_core core [const restrict static 1],
+	const quorum_attributes attributes
+);
+
+void quorum_council_unlock
+(
+	const quorum_core core [const restrict static 1],
+	const quorum_attributes attributes
+);
+
+void quorum_council_notify
+(
+	const quorum_core core [const restrict static 1],
+	const quorum_attributes attributes,
+	const quorum_core_index
 );
 
 #endif

@@ -4,10 +4,32 @@
  * SPDX-License-Identifier: BSD-3-Clause
  **/
 
-#ifndef QUORUM_INCLUDE_COUNCIL_TYPE_H
-#define QUORUM_INCLUDE_COUNCIL_TYPE_H
+#ifndef QUORUM_INCLUDE_COUNCIL_TYPES_H
+#define QUORUM_INCLUDE_COUNCIL_TYPES_H
 
-#include "pervasive.h"
+#include "../pervasive.h"
+
+#include <stdbool.h>
+
+#if (QUORUM_ENABLE_BARRIER == 1)
+	#include "../barrier/types.h"
+#endif
+
+#if (QUORUM_ENABLE_MAILBOX == 1)
+	#include "../mailbox/types.h"
+#endif
+
+#if (QUORUM_ENABLE_MUTEX == 1)
+	#include "../mutex/types.h"
+#endif
+
+#if (QUORUM_ENABLE_SEMAPHORE == 1)
+	#include "../semaphore/types.h"
+#endif
+
+#if (QUORUM_ENABLE_SIGNAL == 1)
+	#include "../signal/types.h"
+#endif
 
 typedef struct
 {

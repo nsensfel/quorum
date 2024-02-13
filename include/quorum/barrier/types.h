@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: BSD-3-Clause
  **/
 
-#ifndef QUORUM_INCLUDE_BARRIER_TYPE_H
-#define QUORUM_INCLUDE_BARRIER_TYPE_H
+#ifndef QUORUM_INCLUDE_BARRIER_TYPES_H
+#define QUORUM_INCLUDE_BARRIER_TYPES_H
 
-#include "pervasive.h"
+#include "../pervasive.h"
 
 #if (QUORUM_ENABLE_BARRIER == 1)
 

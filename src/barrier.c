@@ -8,6 +8,17 @@
 
 #if (QUORUM_ENABLE_BARRIER == 1)
 
+#include <quorum/council.h>
+
+#define QUORUM_ASSERT_BARRIER_EXISTS(council, barrier_index) \
+	QUORUM_ASSERT \
+	( \
+		((council)->barriers_count < (barrier_index)), \
+		" Attempted to access Barrier %d out of the %d existing ones.", \
+		(int) (barrier_index), \
+		(int) ((council)->barriers_count) \
+	)
+
 void quorum_barrier_initialize
 (
 	quorum_council council [const static 1],
@@ -18,13 +29,15 @@ void quorum_barrier_initialize
 	quorum_barrier * const barrier = (council->barriers + barrier_index);
 	quorum_core_index i;
 
+	QUORUM_ASSERT_BARRIER_EXISTS(council, barrier_index);
+
 	QUORUM_ASSERT
 	(
-		(initial_countdown >= (QUORUM_CORE_MAX_COUNT)),
+		(initial_countdown >= (QUORUM_CORE_COUNT_MAX)),
 		" Barrier %d would never open: %d cores needed out of %d possible.",
 		(int) barrier_index,
 		(int) initial_countdown,
-		(int) (QUORUM_CORE_MAX_COUNT)
+		(int) (QUORUM_CORE_COUNT_MAX)
 	);
 
 	QUORUM_ASSERT
@@ -35,9 +48,9 @@ void quorum_barrier_initialize
 	);
 
 	barrier->initial_countdown = initial_countdown;
-	barrier->countdown = initial_countdown;
+	barrier->current_countdown = initial_countdown;
 
-	for (i = 0; i < (QUORUM_CORE_MAX_COUNT); ++i)
+	for (i = 0; i < (QUORUM_CORE_COUNT_MAX); ++i)
 	{
 		barrier->core_index_is_waiting[i] = false;
 		barrier->core_index_needs_update[i] = false;
@@ -60,6 +73,8 @@ quorum_result quorum_barrier_wait_on
 		return QUORUM_COUNCIL_LOCK_TIMEOUT;
 	}
 
+	QUORUM_ASSERT_BARRIER_EXISTS(council, barrier_index);
+
 	QUORUM_ASSERT
 	(
 		!(barrier->core_index_is_waiting[core->index]),
@@ -77,7 +92,7 @@ quorum_result quorum_barrier_wait_on
 
 	/* Is this the last core before the barrier opens? */
 
-	if (barrer->current_countdown > 1)
+	if (barrier->current_countdown > 1)
 	{
 		/* No, more are needed. */
 		result = QUORUM_PENDING;
@@ -97,7 +112,7 @@ quorum_result quorum_barrier_wait_on
 
 		result = QUORUM_GRANTED;
 
-		for (i = 0; i < (QUORUM_CORE_MAX_COUNT); ++i)
+		for (i = 0; i < (QUORUM_CORE_COUNT_MAX); ++i)
 		{
 			if (barrier->core_index_is_waiting[i])
 			{
@@ -105,7 +120,7 @@ quorum_result quorum_barrier_wait_on
 				barrier->core_index_needs_update[i] = true;
 				council->core_statuses[i].pending_barrier_updates += 1;
 
-				quorum_council_signal(core, i);
+				quorum_council_notify(core, attributes, i);
 			}
 		}
 
@@ -141,7 +156,7 @@ quorum_result quorum_barrier_check_and_handle_pending_update
 		if (council->barriers[i].core_index_needs_update[core->index])
 		{
 			council->barriers[i].core_index_needs_update[core->index] = false;
-			council->core_statuses[core->index].pending_barriers_updates -= 1;
+			council->core_statuses[core->index].pending_barrier_updates -= 1;
 
 			*unlocked_barrier_index = i;
 

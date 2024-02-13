@@ -33,16 +33,16 @@ quorum_result quorum_council_initialize_preamble
 	const quorum_attributes attributes
 )
 {
-	if (quorum_council_lock(quorum_core, attributes) != QUORUM_GRANTED)
+	if (quorum_council_lock(core, attributes) != QUORUM_GRANTED)
 	{
-		return QUORUM_COUNCIL_TIMED_OUT;
+		return QUORUM_COUNCIL_LOCK_TIMEOUT;
 	}
 
 	if (council->is_initialized)
 	{
-		quorum_council_unlock(quorum_core);
+		quorum_council_unlock(core, attributes);
 
-		return QUORUM_COUNCIL_SUCCESS;
+		return QUORUM_SUCCESS;
 	}
 
 	#if (QUORUM_ENABLE_BARRIER == 1)
@@ -67,15 +67,17 @@ quorum_result quorum_council_initialize_preamble
 	#endif
 
 	/* Do NOT unlock yet. */
-	return QUORUM_COUNCIL_GRANTED;
+	return QUORUM_GRANTED;
 }
 
 void quorum_council_initialize_epilogue
 (
-	quorum_council [const static 1]
+	quorum_council council [const static 1],
+	const quorum_core core [const restrict static 1],
+	const quorum_attributes attributes
 )
 {
 	council->is_initialized = true;
 
-	quorum_council_unlock(quorum_core);
+	quorum_council_unlock(core, attributes);
 }

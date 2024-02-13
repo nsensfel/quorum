@@ -146,6 +146,8 @@ enum quorum_result
 	QUORUM_GRANTED = 1,
 };
 
+typedef enum quorum_result quorum_result;
+
 enum quorum_attribute
 {
 	QUORUM_DEFAULT_BEHAVIOR = 0,
@@ -169,7 +171,13 @@ enum quorum_attribute
 	 * complete. It is recommended for 'quorum_core.opaque' to hold all
 	 * information regarding how long the timeout should last.
 	 */
-	QUORUM_ENABLE_COUNCIL_TIMEOUT = 4
+	QUORUM_ENABLE_COUNCIL_TIMEOUT = 4,
+
+	/*
+	 * Ignores the FIFO order of this mechanism if doing so makes the operation
+	 * succeed.
+	 */
+	QUORUM_ALLOW_OUT_OF_ORDER = 8
 };
 
 typedef uint32_t quorum_attributes;
@@ -185,7 +193,7 @@ typedef uint32_t quorum_attributes;
 		fprintf \
 		( \
 			stderr, \
-			("[E][QUORUM][%s][l.%d]" (message) "\n"), \
+			"[E][QUORUM][%s][l.%d]" message "\n", \
 			__FILE__, \
 			__LINE__, \
 			__VA_ARGS__ \
@@ -195,9 +203,9 @@ typedef uint32_t quorum_attributes;
 #if (QUORUM_ENABLE_ASSERT == 1)
 	#ifndef QUORUM_ASSERT
 		#define QUORUM_ASSERT(test, message, ...) \
-			if !((test)) \
+			if (!(test)) \
 			{ \
-				QUORUM_ERROR(("[ASSERT]" (message)), __VA_ARGS__); \
+				QUORUM_ERROR("[ASSERT]" message, __VA_ARGS__); \
 			}
 	#endif
 #else
@@ -207,7 +215,7 @@ typedef uint32_t quorum_attributes;
 #if (QUORUM_ENABLE_QUORUM_DEBUG_ASSERT == 1)
 	#ifndef QUORUM_DEBUG_ASSERT
 		#define QUORUM_DEBUG_ASSERT(test, message, ...) \
-			QUORUM_ASSERT(test, ("[QUORUM-DEBUG]" (message)), __VA_ARGS__)
+			QUORUM_ASSERT(test, "[QUORUM-DEBUG]" message, __VA_ARGS__)
 	#endif
 #else
 	#define QUORUM_DEBUG_ASSERT(...)
