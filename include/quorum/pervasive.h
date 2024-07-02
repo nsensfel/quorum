@@ -21,17 +21,16 @@
 	#error "QUORUM_CORE_COUNT_MAX must be defined."
 #endif
 
-#ifndef quorum_core_index
-	typedef uint8_t quorum_core_index;
+#ifndef QUORUM_CORE_INDEX_TYPE
+	#define QUORUM_CORE_INDEX_TYPE uint8_t
 
-	/* The "+ 1" is because of the quorum_core_ident type. */
-	#if ((QUORUM_CORE_COUNT_MAX + 1) > UINT8_MAX)
+	#if ((QUORUM_CORE_COUNT_MAX) > UINT8_MAX)
 		#error "QUORUM_CORE_COUNT_MAX is set too high for the default quorum_core_index type."
 	#endif
 #endif
 
-#ifndef quorum_mechanism_index
-	typedef uint16_t quorum_mechanism_index;
+#ifndef QUORUM_MECHANISM_INDEX_TYPE
+	#define QUORUM_MECHANISM_INDEX_TYPE uint16_t
 
 	#if (defined(QUORUM_MECHANISM_INDEX_MAX) && (QUORUM_MECHANISM_INDEX_MAX > UINT16_MAX))
 		#error "QUORUM_MECHANISM_INDEX_MAX is set too high for quorum_mechanism_index type."
@@ -121,6 +120,8 @@
 /******************************************************************************/
 /**** GLOBAL TYPES ************************************************************/
 /******************************************************************************/
+typedef QUORUM_CORE_INDEX_TYPE quorum_core_index;
+typedef QUORUM_MECHANISM_INDEX_TYPE quorum_mechanism_index;
 
 enum quorum_result
 {
